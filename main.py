@@ -1,11 +1,9 @@
 import subprocess
 import sys
 import os
-from docx import Document
-from docx.shared import RGBColor, Pt
 
 def check_install(package):
-    # Kütüphane yüklü değilse yükle
+   # Kütüphane yüklü mü kontrol eder, değilse yükler
     try:
         __import__(package)
         print(f"{package} is already installed.")
@@ -14,16 +12,24 @@ def check_install(package):
         subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
 def main():
-    # Gerekli kütüphanenin parametresi gönder
+    # Önce python-docx kütüphanesinin yüklü olup olmadığını kontrol et
     check_install("python-docx")
-    
-    # Yeni bir Word belgesi oluştur
-    doc = Document()
 
+    # Gerekli modül yüklendikten sonra import edilir
+    from docx import Document
+    from docx.shared import RGBColor, Pt
+    
     # Dosya adı ve yolu
     doc_name = "example.docx"
     doc_path = ""  # Bu kısmı kendi yolunuza göre ayarlayın
     
+    # Dosya yolunun olup olmadığını kontrol et
+    if not os.path.exists(doc_path):
+       doc_path = "C:\\Users\\OrkunAlpALİM\\Desktop"  # Eğer path yoksa default path atar
+
+    # Yeni bir Word belgesi oluştur
+    doc = Document()
+
     # Paragraf ekle
     paragraph = doc.add_paragraph()
 
@@ -38,9 +44,7 @@ def main():
     run2.font.italic = True
     run2.font.color.rgb = RGBColor(255, 0, 0)
 
-    # Belgeyi belirlenen yola kaydet (path null ise default path belirlenir)
-    if not doc_path:
-        doc_path = "/Users/orkunalpalim/Desktop/"
+    # Belgeyi belirlenen yola kaydet
     full_doc_path = os.path.join(doc_path, doc_name)
     doc.save(full_doc_path)  # Dosya yoluna kaydet
 
@@ -56,3 +60,7 @@ def main():
 # Ana fonksiyonu çalıştır
 if __name__ == "__main__":
     doc_path = main()
+    if doc_path:
+        print(f"Document path returned: {doc_path}")
+    else:
+        print("No document created.")
